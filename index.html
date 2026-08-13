@@ -120,7 +120,39 @@
       color: #e65f8d;
       font-weight: bold;
       font-size: 14px;
-      margin-top: 12px;
+      margin-top: 14px;
+    }
+
+    .acciones-despues {
+      margin-top: 16px;
+    }
+
+    .btn-seguir {
+      display: block;
+      width: 100%;
+      border: none;
+      background: #ffe1eb;
+      color: #a64064;
+      text-align: center;
+      text-decoration: none;
+      padding: 13px;
+      border-radius: 24px;
+      font-weight: bold;
+      font-size: 15px;
+      margin-bottom: 10px;
+    }
+
+    .btn-ver-pedido {
+      display: block;
+      width: 100%;
+      background: #eb6796;
+      color: white;
+      text-align: center;
+      text-decoration: none;
+      padding: 13px;
+      border-radius: 24px;
+      font-weight: bold;
+      font-size: 15px;
     }
 
     .oculto {
@@ -307,7 +339,10 @@
 
     <div class="tarjeta-principal">
 
-      <!-- PRODUCTO -->
+
+      <!-- ===================== -->
+      <!-- VISTA PRODUCTO -->
+      <!-- ===================== -->
 
       <div id="vistaProducto" class="oculto">
 
@@ -318,6 +353,7 @@
         <div class="subtitulo">
           Agrega este producto a tu pedido de Bella Shop.
         </div>
+
 
         <div class="producto-box">
 
@@ -348,6 +384,7 @@
 
 
           <button
+            id="botonAgregar"
             class="btn-principal"
             onclick="agregarProductoActual()">
 
@@ -361,13 +398,41 @@
             class="mensaje-producto">
           </div>
 
+
+          <!-- BOTONES DESPUÉS DE AGREGAR -->
+
+          <div
+            id="accionesDespuesAgregar"
+            class="acciones-despues oculto">
+
+            <button
+              class="btn-seguir"
+              onclick="seguirComprando()">
+
+              ← Seguir comprando
+
+            </button>
+
+
+            <a
+              class="btn-ver-pedido"
+              href="?modo=carrito">
+
+              🛍️ Ver mi pedido
+
+            </a>
+
+          </div>
+
         </div>
 
       </div>
 
 
 
-      <!-- CARRITO -->
+      <!-- ===================== -->
+      <!-- VISTA CARRITO -->
+      <!-- ===================== -->
 
       <div id="vistaCarrito" class="oculto">
 
@@ -422,8 +487,10 @@
 
 
             <div class="nota">
+
               La disponibilidad y el valor final serán confirmados por
               Bella Shop antes de realizar la compra.
+
             </div>
 
           </div>
@@ -452,8 +519,10 @@
             class="zona-whatsapp oculto">
 
             <p>
+
               Al continuar serás redirigido a nuestro WhatsApp
               con el resumen de tu pedido.
+
             </p>
 
 
@@ -479,34 +548,47 @@
   </div>
 
 
+
 <script>
 
   /*
-  -----------------------------------
-  LEER LOS DATOS DESDE LA URL
-  -----------------------------------
+  ==============================
+  LEER DATOS DE LA URL
+  ==============================
   */
 
   const parametros =
-    new URLSearchParams(window.location.search);
+    new URLSearchParams(
+      window.location.search
+    );
+
 
   const modo =
-    parametros.get("modo") || "carrito";
+    parametros.get("modo") ||
+    "carrito";
+
 
   const nombre =
-    parametros.get("nombre") || "";
+    parametros.get("nombre") ||
+    "";
+
 
   const precio =
-    Number(parametros.get("precio")) || 0;
+    Number(
+      parametros.get("precio")
+    ) || 0;
+
 
   const tipo =
-    parametros.get("tipo") || "individual";
+    parametros.get("tipo") ||
+    "individual";
+
 
 
   /*
-  -----------------------------------
+  ==============================
   CARRITO
-  -----------------------------------
+  ==============================
   */
 
   function obtenerCarrito() {
@@ -514,7 +596,9 @@
     try {
 
       return JSON.parse(
-        localStorage.getItem("bellaShopCarrito")
+        localStorage.getItem(
+          "bellaShopCarrito"
+        )
       ) || [];
 
     } catch (error) {
@@ -529,53 +613,82 @@
   function guardarCarrito(carrito) {
 
     localStorage.setItem(
+
       "bellaShopCarrito",
-      JSON.stringify(carrito)
+
+      JSON.stringify(
+        carrito
+      )
+
     );
 
   }
 
 
+
   /*
-  -----------------------------------
-  INICIAR PÁGINA
-  -----------------------------------
+  ==============================
+  INICIAR
+  ==============================
   */
 
   function iniciar() {
 
     if (modo === "producto") {
 
+
       document
-        .getElementById("vistaProducto")
-        .classList.remove("oculto");
+        .getElementById(
+          "vistaProducto"
+        )
+        .classList
+        .remove("oculto");
 
 
       document
-        .getElementById("nombreProducto")
+        .getElementById(
+          "nombreProducto"
+        )
         .innerText =
-        nombre || "Producto Bella Shop";
+        nombre ||
+        "Producto Bella Shop";
 
 
       document
-        .getElementById("precioProducto")
+        .getElementById(
+          "precioProducto"
+        )
         .innerText =
-        "$" + precio.toLocaleString("es-CO");
+
+        "$" +
+
+        precio.toLocaleString(
+          "es-CO"
+        );
 
 
       if (tipo === "carta") {
 
         document
-          .getElementById("zonaReferencia")
-          .classList.remove("oculto");
+          .getElementById(
+            "zonaReferencia"
+          )
+          .classList
+          .remove("oculto");
 
       }
 
+
     } else {
 
+
       document
-        .getElementById("vistaCarrito")
-        .classList.remove("oculto");
+        .getElementById(
+          "vistaCarrito"
+        )
+        .classList
+        .remove("oculto");
+
 
       mostrarCarrito();
 
@@ -584,10 +697,11 @@
   }
 
 
+
   /*
-  -----------------------------------
+  ==============================
   AGREGAR PRODUCTO
-  -----------------------------------
+  ==============================
   */
 
   function agregarProductoActual() {
@@ -597,19 +711,28 @@
 
     if (tipo === "carta") {
 
+
       referencia =
+
         document
-          .getElementById("referencia")
+          .getElementById(
+            "referencia"
+          )
           .value
           .trim();
 
 
       if (!referencia) {
 
+
         document
-          .getElementById("mensajeProducto")
+          .getElementById(
+            "mensajeProducto"
+          )
           .innerText =
+
           "💗 Escribe primero la referencia del tono.";
+
 
         return;
 
@@ -623,54 +746,87 @@
 
 
     const claveProducto =
+
       tipo === "carta"
-        ? nombre + " - Ref. " + referencia
-        : nombre;
+
+      ? nombre +
+        " - Ref. " +
+        referencia
+
+      : nombre;
 
 
     const existente =
+
       carrito.find(
+
         producto =>
-          producto.clave === claveProducto
+
+          producto.clave ===
+          claveProducto
+
       );
 
 
     if (existente) {
 
+
       existente.cantidad++;
+
 
     } else {
 
+
       carrito.push({
 
-        clave: claveProducto,
+        clave:
+          claveProducto,
 
-        nombre: nombre,
+        nombre:
+          nombre,
 
-        referencia: referencia,
+        referencia:
+          referencia,
 
-        precio: precio,
+        precio:
+          precio,
 
-        cantidad: 1
+        cantidad:
+          1
 
       });
 
     }
 
 
-    guardarCarrito(carrito);
+    guardarCarrito(
+      carrito
+    );
 
 
     document
-      .getElementById("mensajeProducto")
+      .getElementById(
+        "mensajeProducto"
+      )
       .innerText =
-      "💗 Producto agregado al pedido";
+
+      "✓ Producto agregado al pedido 💗";
+
+
+    document
+      .getElementById(
+        "accionesDespuesAgregar"
+      )
+      .classList
+      .remove("oculto");
 
 
     if (tipo === "carta") {
 
       document
-        .getElementById("referencia")
+        .getElementById(
+          "referencia"
+        )
         .value = "";
 
     }
@@ -678,45 +834,91 @@
   }
 
 
+
   /*
-  -----------------------------------
+  ==============================
+  SEGUIR COMPRANDO
+  ==============================
+  */
+
+  function seguirComprando() {
+
+    if (
+      window.history.length > 1
+    ) {
+
+      window.history.back();
+
+    } else {
+
+      window.location.href =
+        "https://sites.google.com/";
+
+    }
+
+  }
+
+
+
+  /*
+  ==============================
   MOSTRAR CARRITO
-  -----------------------------------
+  ==============================
   */
 
   function mostrarCarrito() {
+
 
     const carrito =
       obtenerCarrito();
 
 
     const estadoVacio =
-      document.getElementById("estadoVacio");
+      document.getElementById(
+        "estadoVacio"
+      );
+
 
     const contenido =
-      document.getElementById("contenidoCarrito");
+      document.getElementById(
+        "contenidoCarrito"
+      );
+
 
     const lista =
-      document.getElementById("listaCarrito");
+      document.getElementById(
+        "listaCarrito"
+      );
+
 
     const totalElemento =
-      document.getElementById("total");
+      document.getElementById(
+        "total"
+      );
 
 
     document
-      .getElementById("zonaWhatsapp")
-      .classList.add("oculto");
+      .getElementById(
+        "zonaWhatsapp"
+      )
+      .classList
+      .add("oculto");
 
 
-    if (carrito.length === 0) {
+    if (
+      carrito.length === 0
+    ) {
+
 
       estadoVacio
         .classList
         .remove("oculto");
 
+
       contenido
         .classList
         .add("oculto");
+
 
       return;
 
@@ -726,6 +928,7 @@
     estadoVacio
       .classList
       .add("oculto");
+
 
     contenido
       .classList
@@ -738,11 +941,14 @@
 
 
     carrito.forEach(
+
       (producto, index) => {
 
 
         const subtotal =
+
           producto.precio *
+
           producto.cantidad;
 
 
@@ -750,13 +956,21 @@
 
 
         const referenciaHtml =
+
           producto.referencia
 
           ? `
+
             <div class="ref-item">
+
               Referencia:
-              <b>${producto.referencia}</b>
+
+              <b>
+                ${producto.referencia}
+              </b>
+
             </div>
+
           `
 
           : "";
@@ -767,7 +981,9 @@
           <div class="item-carrito">
 
             <div class="nombre-item">
+
               ${producto.nombre}
+
             </div>
 
 
@@ -779,7 +995,9 @@
               Precio unitario:
 
               $${producto.precio
-                .toLocaleString("es-CO")}
+                .toLocaleString(
+                  "es-CO"
+                )}
 
             </div>
 
@@ -789,29 +1007,35 @@
               Subtotal:
 
               $${subtotal
-                .toLocaleString("es-CO")}
+                .toLocaleString(
+                  "es-CO"
+                )}
 
             </div>
 
 
             <div class="controles">
 
+
               <div class="cantidad-control">
 
 
                 <button
                   class="btn-cantidad"
-                  onclick="cambiarCantidad(
-                    ${index},
-                    -1
-                  )">
+                  onclick="
+                    cambiarCantidad(
+                      ${index},
+                      -1
+                    )
+                  ">
 
                   −
 
                 </button>
 
 
-                <span class="numero-cantidad">
+                <span
+                  class="numero-cantidad">
 
                   ${producto.cantidad}
 
@@ -820,10 +1044,12 @@
 
                 <button
                   class="btn-cantidad"
-                  onclick="cambiarCantidad(
-                    ${index},
-                    1
-                  )">
+                  onclick="
+                    cambiarCantidad(
+                      ${index},
+                      1
+                    )
+                  ">
 
                   +
 
@@ -835,9 +1061,11 @@
 
               <button
                 class="btn-eliminar"
-                onclick="eliminarProducto(
-                  ${index}
-                )">
+                onclick="
+                  eliminarProducto(
+                    ${index}
+                  )
+                ">
 
                 Eliminar
 
@@ -851,6 +1079,7 @@
         `;
 
       }
+
     );
 
 
@@ -859,21 +1088,26 @@
 
 
     totalElemento.innerText =
-      total.toLocaleString("es-CO");
+
+      total.toLocaleString(
+        "es-CO"
+      );
 
   }
 
 
+
   /*
-  -----------------------------------
+  ==============================
   CAMBIAR CANTIDAD
-  -----------------------------------
+  ==============================
   */
 
   function cambiarCantidad(
     index,
     cambio
   ) {
+
 
     const carrito =
       obtenerCarrito();
@@ -886,6 +1120,7 @@
     if (
       carrito[index].cantidad <= 0
     ) {
+
 
       carrito.splice(
         index,
@@ -905,13 +1140,17 @@
   }
 
 
+
   /*
-  -----------------------------------
-  ELIMINAR
-  -----------------------------------
+  ==============================
+  ELIMINAR PRODUCTO
+  ==============================
   */
 
-  function eliminarProducto(index) {
+  function eliminarProducto(
+    index
+  ) {
+
 
     const carrito =
       obtenerCarrito();
@@ -933,22 +1172,27 @@
   }
 
 
+
   /*
-  -----------------------------------
-  VACIAR
-  -----------------------------------
+  ==============================
+  VACIAR PEDIDO
+  ==============================
   */
 
   function vaciarCarrito() {
 
+
     const confirmar =
+
       confirm(
         "¿Deseas vaciar todo tu pedido?"
       );
 
 
     if (!confirmar) {
+
       return;
+
     }
 
 
@@ -962,13 +1206,15 @@
   }
 
 
+
   /*
-  -----------------------------------
+  ==============================
   WHATSAPP
-  -----------------------------------
+  ==============================
   */
 
   function prepararWhatsapp() {
+
 
     const carrito =
       obtenerCarrito();
@@ -994,6 +1240,7 @@
 
 
     carrito.forEach(
+
       producto => {
 
 
@@ -1020,6 +1267,7 @@
           producto.referencia
         ) {
 
+
           mensaje +=
 
             "Referencia: " +
@@ -1043,7 +1291,9 @@
           "Precio unitario: $" +
 
           producto.precio
-            .toLocaleString("es-CO") +
+            .toLocaleString(
+              "es-CO"
+            ) +
 
           "\n" +
 
@@ -1051,11 +1301,14 @@
           "Subtotal: $" +
 
           subtotal
-            .toLocaleString("es-CO") +
+            .toLocaleString(
+              "es-CO"
+            ) +
 
           "\n\n";
 
       }
+
     );
 
 
@@ -1063,8 +1316,9 @@
 
       "🛍️ TOTAL ESTIMADO: $" +
 
-      total
-        .toLocaleString("es-CO") +
+      total.toLocaleString(
+        "es-CO"
+      ) +
 
       "\n\n" +
 
@@ -1111,4 +1365,5 @@
 </script>
 
 </body>
+
 </html>
