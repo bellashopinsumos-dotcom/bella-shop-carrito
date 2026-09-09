@@ -84,6 +84,13 @@
       margin-bottom: 6px;
     }
 
+    .ayuda-referencia {
+      margin-top: 7px;
+      color: #777;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
     input {
       width: 100%;
       border: 1px solid #f1bfd0;
@@ -370,17 +377,31 @@
             class="referencia-box oculto">
 
             <label for="referencia">
-              Referencia del esmalte
+              Referencia(s) del producto
             </label>
 
             <input
               id="referencia"
               type="text"
-              placeholder="Ej: 001, 014, 27..."
+              placeholder="Ejemplo: 1, 2, 3"
               autocomplete="off"
             >
 
+            <div class="ayuda-referencia">
+              Si deseas varios tonos, separa cada referencia con una coma.
+              Cada referencia corresponde a una unidad.
+            </div>
+
           </div>
+
+
+          <button
+            class="btn-seguir"
+            onclick="seguirComprando()">
+
+            ← Regresar
+
+          </button>
 
 
           <button
@@ -706,13 +727,20 @@
 
   function agregarProductoActual() {
 
-    let referencia = "";
+    const carrito =
+      obtenerCarrito();
 
+
+    /*
+    ==============================
+    PRODUCTOS TIPO CARTA
+    ==============================
+    */
 
     if (tipo === "carta") {
 
 
-      referencia =
+      const textoReferencias =
 
         document
           .getElementById(
@@ -722,7 +750,7 @@
           .trim();
 
 
-      if (!referencia) {
+      if (!textoReferencias) {
 
 
         document
@@ -738,22 +766,146 @@
 
       }
 
+
+      const referencias =
+
+        textoReferencias
+          .split(",")
+          .map(
+            referencia =>
+              referencia.trim()
+          )
+          .filter(
+            referencia =>
+              referencia !== ""
+          );
+
+
+      if (referencias.length === 0) {
+
+
+        document
+          .getElementById(
+            "mensajeProducto"
+          )
+          .innerText =
+
+          "💗 Escribe una referencia válida.";
+
+
+        return;
+
+      }
+
+
+      referencias.forEach(
+
+        referencia => {
+
+
+          const claveProducto =
+
+            nombre +
+            " - Ref. " +
+            referencia;
+
+
+          const existente =
+
+            carrito.find(
+
+              producto =>
+
+                producto.clave ===
+                claveProducto
+
+            );
+
+
+          if (existente) {
+
+
+            existente.cantidad++;
+
+
+          } else {
+
+
+            carrito.push({
+
+              clave:
+                claveProducto,
+
+              nombre:
+                nombre,
+
+              referencia:
+                referencia,
+
+              precio:
+                precio,
+
+              cantidad:
+                1
+
+            });
+
+          }
+
+        }
+
+      );
+
+
+      guardarCarrito(
+        carrito
+      );
+
+
+      document
+        .getElementById(
+          "mensajeProducto"
+        )
+        .innerText =
+
+        referencias.length === 1
+
+        ? "✓ Producto agregado al pedido 💗"
+
+        : "✓ " +
+          referencias.length +
+          " productos agregados al pedido 💗";
+
+
+      document
+        .getElementById(
+          "accionesDespuesAgregar"
+        )
+        .classList
+        .remove("oculto");
+
+
+      document
+        .getElementById(
+          "referencia"
+        )
+        .value = "";
+
+
+      return;
+
     }
 
 
-    const carrito =
-      obtenerCarrito();
+    /*
+    ==============================
+    PRODUCTOS INDIVIDUALES
+    ==============================
+    */
 
 
     const claveProducto =
-
-      tipo === "carta"
-
-      ? nombre +
-        " - Ref. " +
-        referencia
-
-      : nombre;
+      nombre;
 
 
     const existente =
@@ -786,7 +938,7 @@
           nombre,
 
         referencia:
-          referencia,
+          "",
 
         precio:
           precio,
@@ -819,17 +971,6 @@
       )
       .classList
       .remove("oculto");
-
-
-    if (tipo === "carta") {
-
-      document
-        .getElementById(
-          "referencia"
-        )
-        .value = "";
-
-    }
 
   }
 
