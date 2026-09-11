@@ -59,8 +59,8 @@
       background: rgba(255,255,255,0.96);
       border: 1px solid var(--borde);
       border-radius: 26px;
-      padding: 24px 24px 22px;
-      margin-bottom: 20px;
+      padding: 18px 22px 16px;
+      margin-bottom: 14px;
       box-shadow: var(--sombra);
       text-align: center;
     }
@@ -630,7 +630,7 @@
       <!-- VISTA CARRITO -->
       <!-- ===================== -->
 
-      <div id="vistaCarrito" class="oculto">
+      <div id="vistaCarrito">
 
         <div id="estadoVacio" class="carrito-vacio oculto">
 
@@ -821,6 +821,11 @@
   function iniciar() {
 
     if (modo === "producto") {
+
+      document
+        .getElementById("vistaCarrito")
+        .classList
+        .add("oculto");
 
 
       document
