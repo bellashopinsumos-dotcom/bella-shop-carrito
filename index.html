@@ -778,41 +778,37 @@
 
   function importarPedidoDesdeUrl() {
 
-    const pedidoUrl =
-      parametros.get("pedido");
+    const pedidoUrl = parametros.get("pedido");
 
     if (!pedidoUrl) {
-      return;
+      return null;
     }
 
     try {
 
       const pedidoImportado =
-        JSON.parse(
-          decodeURIComponent(pedidoUrl)
-        );
+        JSON.parse(pedidoUrl);
 
-      if (
-        Array.isArray(pedidoImportado) &&
-        pedidoImportado.length > 0
-      ) {
+      if (Array.isArray(pedidoImportado)) {
 
         localStorage.setItem(
           "bellaShopCarrito",
           JSON.stringify(pedidoImportado)
         );
 
+        return pedidoImportado;
       }
 
     } catch (error) {
 
       console.error(
-        "No se pudo importar el pedido.",
+        "No se pudo leer el pedido enviado desde el catálogo.",
         error
       );
 
     }
 
+    return null;
   }
 
 
@@ -825,6 +821,37 @@
 
   function obtenerCarrito() {
 
+    const pedidoDesdeUrl =
+      parametros.get("pedido");
+
+    if (pedidoDesdeUrl) {
+
+      try {
+
+        const pedido =
+          JSON.parse(pedidoDesdeUrl);
+
+        if (Array.isArray(pedido)) {
+
+          localStorage.setItem(
+            "bellaShopCarrito",
+            JSON.stringify(pedido)
+          );
+
+          return pedido;
+        }
+
+      } catch (error) {
+
+        console.error(
+          "Error leyendo el pedido de la URL.",
+          error
+        );
+
+      }
+
+    }
+
     try {
 
       return JSON.parse(
@@ -836,7 +863,6 @@
     } catch (error) {
 
       return [];
-
     }
 
   }
@@ -865,8 +891,6 @@
   */
 
   function iniciar() {
-
-    importarPedidoDesdeUrl();
 
     if (modo === "producto") {
 
