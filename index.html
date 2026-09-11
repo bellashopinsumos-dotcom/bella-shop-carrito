@@ -11,66 +11,410 @@
 
   <title>Bella Shop - Mi pedido</title>
 
+  
   <style>
-
     * {
       box-sizing: border-box;
     }
 
+    :root {
+      --rosa: #e85f91;
+      --rosa-fuerte: #d94a79;
+      --rosa-suave: #fff0f5;
+      --rosa-claro: #fff8fb;
+      --borde: #f1d8e1;
+      --texto: #3b3035;
+      --texto-suave: #7e6871;
+      --blanco: #ffffff;
+      --sombra: 0 14px 36px rgba(103, 52, 71, 0.08);
+    }
+
     body {
       margin: 0;
-      padding: 16px;
+      min-height: 100vh;
       font-family: Arial, sans-serif;
-      background: #fff7fa;
-      color: #2b2b2b;
+      background:
+        radial-gradient(circle at top left, rgba(232,95,145,0.08), transparent 30%),
+        linear-gradient(180deg, #fffafb 0%, #fff6f9 100%);
+      color: var(--texto);
+    }
+
+    a {
+      color: inherit;
     }
 
     .contenedor {
-      width: 100%;
-      max-width: 430px;
-      margin: auto;
+      width: min(1120px, calc(100% - 28px));
+      margin: 0 auto;
+      padding: 26px 0 50px;
     }
 
     .tarjeta-principal {
-      background: #ffffff;
+      background: transparent;
+    }
+
+    .cabecera-bella {
+      position: relative;
+      overflow: hidden;
+      background: rgba(255,255,255,0.96);
+      border: 1px solid var(--borde);
       border-radius: 26px;
-      padding: 20px;
-      box-shadow: 0 5px 20px rgba(0,0,0,0.07);
+      padding: 24px 24px 22px;
+      margin-bottom: 20px;
+      box-shadow: var(--sombra);
+      text-align: center;
+    }
+
+    .cabecera-bella::after {
+      content: "";
+      position: absolute;
+      width: 150px;
+      height: 150px;
+      right: -35px;
+      top: -28px;
+      background: url("imagenes/Cara logo bellashop.png") center/contain no-repeat;
+      opacity: 0.05;
+      pointer-events: none;
+    }
+
+    .marca-superior {
+      display: inline-block;
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: var(--rosa-suave);
+      color: var(--rosa-fuerte);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
     }
 
     .titulo {
       text-align: center;
-      color: #e65f8d;
-      font-size: 27px;
-      margin: 0 0 6px 0;
+      color: var(--texto);
+      font-size: clamp(28px, 4vw, 42px);
+      line-height: 1.05;
+      margin: 0 0 8px;
+    }
+
+    .titulo span {
+      color: var(--rosa-fuerte);
     }
 
     .subtitulo {
       text-align: center;
-      color: #777;
+      color: var(--texto-suave);
       font-size: 14px;
-      line-height: 1.5;
-      margin-bottom: 20px;
+      line-height: 1.6;
+      margin: 0 auto;
+      max-width: 620px;
     }
 
-    .producto-box {
-      background: #fff0f5;
-      border-radius: 18px;
+    .oculto {
+      display: none !important;
+    }
+
+    .carrito-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 340px;
+      gap: 22px;
+      align-items: start;
+    }
+
+    .panel-lista,
+    .panel-resumen {
+      background: rgba(255,255,255,0.96);
+      border: 1px solid var(--borde);
+      border-radius: 24px;
+      box-shadow: var(--sombra);
+    }
+
+    .panel-lista {
+      padding: 20px;
+    }
+
+    .panel-resumen {
+      padding: 20px;
+      position: sticky;
+      top: 18px;
+    }
+
+    .encabezado-lista {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 16px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid #f2e1e7;
+    }
+
+    .encabezado-lista h2,
+    .panel-resumen h2 {
+      margin: 0;
+      font-size: 20px;
+      color: var(--texto);
+    }
+
+    .contador-items {
+      background: var(--rosa-suave);
+      color: var(--rosa-fuerte);
+      border-radius: 999px;
+      padding: 7px 11px;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .carrito-vacio {
+      background: rgba(255,255,255,0.96);
+      border: 1px solid var(--borde);
+      border-radius: 24px;
+      text-align: center;
+      padding: 42px 20px;
+      box-shadow: var(--sombra);
+    }
+
+    .carrito-vacio .icono {
+      font-size: 46px;
+      margin-bottom: 12px;
+    }
+
+    .carrito-vacio h3 {
+      margin: 0 0 7px;
+      color: var(--rosa-fuerte);
+      font-size: 22px;
+    }
+
+    .carrito-vacio p {
+      margin: 0 auto 18px;
+      color: var(--texto-suave);
+      font-size: 14px;
+      line-height: 1.55;
+      max-width: 430px;
+    }
+
+    .btn-volver-catalogo {
+      display: inline-block;
+      text-decoration: none;
+      background: var(--rosa);
+      color: white;
+      font-weight: 800;
+      padding: 12px 18px;
+      border-radius: 999px;
+    }
+
+    .item-carrito {
+      background: #fffafc;
+      border: 1px solid #f1dce4;
+      border-radius: 19px;
       padding: 16px;
-      margin-bottom: 14px;
+      margin-bottom: 12px;
+    }
+
+    .item-superior {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: flex-start;
+      margin-bottom: 10px;
+    }
+
+    .nombre-item {
+      font-size: 17px;
+      font-weight: 800;
+      line-height: 1.35;
+      margin: 0;
+      color: var(--texto);
+    }
+
+    .ref-item {
+      display: inline-block;
+      margin-top: 7px;
+      background: #fff0f5;
+      color: #a64868;
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .precio-unitario-box {
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    .precio-unitario-box small {
+      display: block;
+      color: var(--texto-suave);
+      margin-bottom: 3px;
+      font-size: 11px;
+    }
+
+    .precio-item {
+      color: var(--rosa-fuerte);
+      font-weight: 900;
+      font-size: 16px;
+    }
+
+    .linea-item {
+      height: 1px;
+      background: #f1e1e7;
+      margin: 12px 0;
+    }
+
+    .item-inferior {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .cantidad-control {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #fff0f5;
+      padding: 5px;
+      border-radius: 999px;
+    }
+
+    .btn-cantidad {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 0;
+      background: white;
+      color: var(--rosa-fuerte);
+      font-size: 18px;
+      font-weight: 900;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(86,45,60,0.08);
+    }
+
+    .numero-cantidad {
+      min-width: 24px;
+      text-align: center;
+      font-weight: 900;
+      color: var(--texto);
+    }
+
+    .acciones-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .subtotal-item {
+      font-size: 14px;
+      color: var(--texto-suave);
+    }
+
+    .subtotal-item strong {
+      color: var(--texto);
+      font-size: 15px;
+    }
+
+    .btn-eliminar {
+      border: 0;
+      background: transparent;
+      color: #b46d85;
+      font-size: 12px;
+      font-weight: 800;
+      padding: 5px;
+      cursor: pointer;
+    }
+
+    .fila-resumen {
+      display: flex;
+      justify-content: space-between;
+      gap: 15px;
+      margin-bottom: 10px;
+      color: var(--texto-suave);
+      font-size: 14px;
+    }
+
+    .fila-resumen strong {
+      color: var(--texto);
+    }
+
+    .total {
+      display: flex;
+      justify-content: space-between;
+      gap: 15px;
+      padding-top: 15px;
+      margin-top: 12px;
+      border-top: 1px solid #f0dfe5;
+      font-size: 19px;
+      font-weight: 900;
+      color: var(--texto);
+    }
+
+    .total span:last-child {
+      color: var(--rosa-fuerte);
+    }
+
+    .nota {
+      margin-top: 12px;
+      color: var(--texto-suave);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .btn-finalizar,
+    .btn-vaciar {
+      width: 100%;
+      border: none;
+      border-radius: 16px;
+      padding: 14px;
+      font-size: 14px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .btn-finalizar {
+      background: var(--rosa);
+      color: white;
+      margin-top: 16px;
+      box-shadow: 0 10px 22px rgba(220,82,130,0.18);
+    }
+
+    .btn-finalizar:hover {
+      background: var(--rosa-fuerte);
+    }
+
+    .btn-vaciar {
+      background: var(--rosa-suave);
+      color: #a64868;
+      margin-top: 10px;
+    }
+
+    .seguir-comprando-link {
+      display: block;
+      text-align: center;
+      text-decoration: none;
+      color: var(--rosa-fuerte);
+      font-weight: 800;
+      font-size: 13px;
+      margin-top: 14px;
+    }
+
+    /* Vista producto antigua: se conserva por compatibilidad, pero ya no es la principal */
+    .producto-box {
+      background: white;
+      border: 1px solid var(--borde);
+      border-radius: 22px;
+      padding: 18px;
+      box-shadow: var(--sombra);
     }
 
     .producto-box h3 {
-      margin: 0 0 5px 0;
-      color: #333;
-      font-size: 18px;
+      margin: 0 0 6px;
     }
 
     .precio {
-      color: #e65f8d;
-      font-size: 17px;
-      font-weight: bold;
-      margin-top: 5px;
+      color: var(--rosa-fuerte);
+      font-weight: 900;
     }
 
     .referencia-box {
@@ -79,265 +423,122 @@
 
     .referencia-box label {
       display: block;
-      font-size: 14px;
-      font-weight: bold;
+      font-weight: 800;
+      font-size: 13px;
       margin-bottom: 6px;
     }
 
     .ayuda-referencia {
       margin-top: 7px;
-      color: #777;
+      color: var(--texto-suave);
       font-size: 12px;
       line-height: 1.45;
     }
 
     input {
       width: 100%;
-      border: 1px solid #f1bfd0;
+      border: 1px solid #efcad7;
       border-radius: 14px;
       padding: 12px;
       font-size: 15px;
       outline: none;
-      background: #fff;
+      background: white;
     }
 
     input:focus {
-      border-color: #e65f8d;
+      border-color: var(--rosa);
     }
 
-    button {
-      font-family: Arial, sans-serif;
+    .btn-principal,
+    .btn-seguir,
+    .btn-ver-pedido {
+      width: 100%;
+      border: 0;
+      border-radius: 16px;
+      padding: 13px;
+      font-weight: 800;
+      margin-top: 10px;
       cursor: pointer;
     }
 
-    .btn-principal {
-      width: 100%;
-      background: #eb6796;
+    .btn-principal,
+    .btn-ver-pedido {
+      background: var(--rosa);
       color: white;
-      border: none;
-      border-radius: 24px;
-      padding: 14px;
-      margin-top: 14px;
-      font-size: 15px;
-      font-weight: bold;
+      text-decoration: none;
+      text-align: center;
+      display: block;
+    }
+
+    .btn-seguir {
+      background: var(--rosa-suave);
+      color: #a64868;
     }
 
     .mensaje-producto {
       text-align: center;
-      color: #e65f8d;
-      font-weight: bold;
-      font-size: 14px;
-      margin-top: 14px;
+      color: var(--rosa-fuerte);
+      font-weight: 800;
+      font-size: 13px;
+      margin-top: 12px;
     }
 
     .acciones-despues {
-      margin-top: 16px;
-    }
-
-    .btn-seguir {
-      display: block;
-      width: 100%;
-      border: none;
-      background: #ffe1eb;
-      color: #a64064;
-      text-align: center;
-      text-decoration: none;
-      padding: 13px;
-      border-radius: 24px;
-      font-weight: bold;
-      font-size: 15px;
-      margin-bottom: 10px;
-    }
-
-    .btn-ver-pedido {
-      display: block;
-      width: 100%;
-      background: #eb6796;
-      color: white;
-      text-align: center;
-      text-decoration: none;
-      padding: 13px;
-      border-radius: 24px;
-      font-weight: bold;
-      font-size: 15px;
-    }
-
-    .oculto {
-      display: none !important;
-    }
-
-    .carrito-vacio {
-      background: #fff0f5;
-      border-radius: 20px;
-      text-align: center;
-      padding: 28px 18px;
-      margin-top: 16px;
-    }
-
-    .carrito-vacio .icono {
-      font-size: 42px;
-      margin-bottom: 10px;
-    }
-
-    .carrito-vacio h3 {
-      margin: 0 0 6px 0;
-      color: #e65f8d;
-    }
-
-    .carrito-vacio p {
-      margin: 0;
-      color: #777;
-      font-size: 14px;
-      line-height: 1.5;
-    }
-
-    .item-carrito {
-      background: #fff0f5;
-      border-radius: 18px;
-      padding: 15px;
-      margin-bottom: 12px;
-    }
-
-    .nombre-item {
-      font-size: 17px;
-      font-weight: bold;
-      margin-bottom: 5px;
-    }
-
-    .ref-item {
-      color: #a14b69;
-      font-size: 14px;
-      margin-bottom: 7px;
-    }
-
-    .precio-item {
-      font-size: 14px;
-      color: #555;
-      margin-bottom: 4px;
-    }
-
-    .subtotal-item {
-      font-size: 15px;
-      font-weight: bold;
-      margin-bottom: 10px;
-    }
-
-    .controles {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      margin-top: 10px;
-    }
-
-    .cantidad-control {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .btn-cantidad {
-      width: 34px;
-      height: 34px;
-      border-radius: 50%;
-      border: none;
-      background: #ffd5e3;
-      color: #a53b61;
-      font-size: 20px;
-      font-weight: bold;
-    }
-
-    .numero-cantidad {
-      min-width: 24px;
-      text-align: center;
-      font-weight: bold;
-    }
-
-    .btn-eliminar {
-      border: none;
-      background: transparent;
-      color: #cf4e78;
-      font-size: 13px;
-      font-weight: bold;
-      padding: 6px;
-    }
-
-    .resumen {
-      margin-top: 18px;
-      background: #fff8fa;
-      border: 1px solid #f6d2de;
-      border-radius: 18px;
-      padding: 16px;
-    }
-
-    .total {
-      display: flex;
-      justify-content: space-between;
-      gap: 15px;
-      font-size: 19px;
-      font-weight: bold;
-    }
-
-    .nota {
-      margin-top: 10px;
-      color: #777;
-      font-size: 12px;
-      line-height: 1.5;
-    }
-
-    .btn-vaciar {
-      width: 100%;
-      background: #ffe1eb;
-      color: #a64064;
-      border: none;
-      border-radius: 24px;
-      padding: 13px;
-      margin-top: 12px;
-      font-size: 14px;
-      font-weight: bold;
-    }
-
-    .btn-finalizar {
-      width: 100%;
-      background: #eb6796;
-      color: white;
-      border: none;
-      border-radius: 24px;
-      padding: 14px;
-      margin-top: 10px;
-      font-size: 15px;
-      font-weight: bold;
+      margin-top: 14px;
     }
 
     .zona-whatsapp {
-      margin-top: 16px;
-      background: #f4fff7;
-      border-radius: 18px;
-      padding: 14px;
-      text-align: center;
+      display: none;
     }
 
-    .zona-whatsapp p {
-      font-size: 13px;
-      color: #555;
-      line-height: 1.5;
-      margin: 0 0 12px 0;
+    @media (max-width: 860px) {
+      .contenedor {
+        width: min(100% - 18px, 680px);
+        padding-top: 14px;
+      }
+
+      .carrito-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .panel-resumen {
+        position: static;
+      }
     }
 
-    .btn-whatsapp {
-      display: block;
-      width: 100%;
-      background: #25D366;
-      color: white;
-      text-decoration: none;
-      border-radius: 24px;
-      padding: 14px;
-      font-size: 15px;
-      font-weight: bold;
-    }
+    @media (max-width: 520px) {
+      .cabecera-bella {
+        padding: 20px 16px;
+        border-radius: 20px;
+      }
 
+      .panel-lista,
+      .panel-resumen,
+      .carrito-vacio {
+        border-radius: 20px;
+      }
+
+      .item-superior {
+        flex-direction: column;
+      }
+
+      .precio-unitario-box {
+        text-align: left;
+      }
+
+      .item-inferior {
+        align-items: flex-start;
+      }
+
+      .acciones-item {
+        width: 100%;
+        justify-content: space-between;
+      }
+    }
   </style>
+
 </head>
+
 
 
 <body>
@@ -346,35 +547,28 @@
 
     <div class="tarjeta-principal">
 
+      <div class="cabecera-bella">
+        <span class="marca-superior">BELLA SHOP · TU PEDIDO</span>
+        <h1 class="titulo">Mi <span>pedido</span> 💕</h1>
+        <div class="subtitulo">
+          Revisa tus productos, ajusta cantidades y confirma que todo esté como lo quieres.
+        </div>
+      </div>
+
 
       <!-- ===================== -->
-      <!-- VISTA PRODUCTO -->
+      <!-- VISTA PRODUCTO ANTIGUA -->
       <!-- ===================== -->
 
       <div id="vistaProducto" class="oculto">
-
-        <h1 class="titulo">
-          🛍️ Agregar al pedido
-        </h1>
-
-        <div class="subtitulo">
-          Agrega este producto a tu pedido de Bella Shop.
-        </div>
-
 
         <div class="producto-box">
 
           <h3 id="nombreProducto"></h3>
 
-          <div
-            class="precio"
-            id="precioProducto">
-          </div>
+          <div class="precio" id="precioProducto"></div>
 
-
-          <div
-            id="zonaReferencia"
-            class="referencia-box oculto">
+          <div id="zonaReferencia" class="referencia-box oculto">
 
             <label for="referencia">
               Referencia(s) del producto
@@ -394,33 +588,20 @@
 
           </div>
 
-
           <button
             class="btn-seguir"
             onclick="seguirComprando()">
-
             ← Regresar
-
           </button>
-
 
           <button
             id="botonAgregar"
             class="btn-principal"
             onclick="agregarProductoActual()">
-
             🛍️ Agregar al pedido
-
           </button>
 
-
-          <div
-            id="mensajeProducto"
-            class="mensaje-producto">
-          </div>
-
-
-          <!-- BOTONES DESPUÉS DE AGREGAR -->
+          <div id="mensajeProducto" class="mensaje-producto"></div>
 
           <div
             id="accionesDespuesAgregar"
@@ -429,18 +610,13 @@
             <button
               class="btn-seguir"
               onclick="seguirComprando()">
-
               ← Seguir comprando
-
             </button>
-
 
             <a
               class="btn-ver-pedido"
               href="?modo=carrito">
-
               🛍️ Ver mi pedido
-
             </a>
 
           </div>
@@ -450,113 +626,104 @@
       </div>
 
 
-
       <!-- ===================== -->
       <!-- VISTA CARRITO -->
       <!-- ===================== -->
 
       <div id="vistaCarrito" class="oculto">
 
-        <h1 class="titulo">
-          🛍️ Mi pedido
-        </h1>
+        <div id="estadoVacio" class="carrito-vacio oculto">
 
-        <div class="subtitulo">
-          Revisa tus productos antes de enviarnos tu solicitud.
-        </div>
+          <div class="icono">🛍️</div>
 
-
-        <div
-          id="estadoVacio"
-          class="carrito-vacio oculto">
-
-          <div class="icono">
-            🛍️
-          </div>
-
-          <h3>
-            Tu pedido está vacío
-          </h3>
+          <h3>Tu pedido está vacío</h3>
 
           <p>
-            Agrega los productos que te gusten desde nuestro catálogo.
+            Todavía no has agregado productos. Vuelve al catálogo y encuentra tus favoritos. 💗
           </p>
+
+          <a
+            class="btn-volver-catalogo"
+            href="https://bellashopinsumos-dotcom.github.io/bella-shop-pruebas/">
+            EXPLORAR CATÁLOGO
+          </a>
 
         </div>
 
 
-        <div
-          id="contenidoCarrito"
-          class="oculto">
+        <div id="contenidoCarrito" class="oculto">
 
-          <div id="listaCarrito"></div>
+          <div class="carrito-layout">
 
+            <section class="panel-lista">
 
-          <div class="resumen">
+              <div class="encabezado-lista">
+                <h2>Productos seleccionados</h2>
+                <span class="contador-items" id="contadorItems">0 productos</span>
+              </div>
 
-            <div class="total">
+              <div id="listaCarrito"></div>
 
-              <span>
-                Total estimado
-              </span>
-
-              <span>
-                $<span id="total">0</span>
-              </span>
-
-            </div>
+            </section>
 
 
-            <div class="nota">
+            <aside class="panel-resumen">
 
-              La disponibilidad y el valor final serán confirmados por
-              Bella Shop antes de realizar la compra.
+              <h2>Resumen del pedido</h2>
 
-            </div>
+              <div style="height:14px"></div>
 
-          </div>
+              <div class="fila-resumen">
+                <span>Referencias / productos</span>
+                <strong id="resumenProductos">0</strong>
+              </div>
 
+              <div class="fila-resumen">
+                <span>Unidades</span>
+                <strong id="resumenUnidades">0</strong>
+              </div>
 
-          <button
-            class="btn-vaciar"
-            onclick="vaciarCarrito()">
+              <div class="total">
+                <span>Total estimado</span>
+                <span>$<span id="total">0</span></span>
+              </div>
 
-            Vaciar pedido
+              <div class="nota">
+                Te confirmamos la disponibilidad según la referencia escogida.
+                El valor final será confirmado por Bella Shop antes de realizar la compra.
+              </div>
 
-          </button>
+              <button
+                class="btn-finalizar"
+                onclick="prepararWhatsapp()">
+                💗 FINALIZAR PEDIDO
+              </button>
 
+              <button
+                class="btn-vaciar"
+                onclick="vaciarCarrito()">
+                Vaciar pedido
+              </button>
 
-          <button
-            class="btn-finalizar"
-            onclick="prepararWhatsapp()">
+              <a
+                class="seguir-comprando-link"
+                href="https://bellashopinsumos-dotcom.github.io/bella-shop-pruebas/">
+                ← Seguir comprando
+              </a>
 
-            💗 Finalizar pedido
+              <div id="zonaWhatsapp" class="zona-whatsapp oculto">
 
-          </button>
+                <a
+                  id="enlaceWhatsapp"
+                  href="#"
+                  target="_blank"
+                  rel="noopener noreferrer">
+                  Enviar pedido por WhatsApp
+                </a>
 
+              </div>
 
-          <div
-            id="zonaWhatsapp"
-            class="zona-whatsapp oculto">
-
-            <p>
-
-              Al continuar serás redirigido a nuestro WhatsApp
-              con el resumen de tu pedido.
-
-            </p>
-
-
-            <a
-              id="enlaceWhatsapp"
-              class="btn-whatsapp"
-              href="#"
-              target="_blank"
-              rel="noopener noreferrer">
-
-              💬 Enviar pedido por WhatsApp
-
-            </a>
+            </aside>
 
           </div>
 
@@ -567,8 +734,6 @@
     </div>
 
   </div>
-
-
 
 <script>
 
@@ -1009,231 +1174,164 @@
 
   function mostrarCarrito() {
 
-
-    const carrito =
-      obtenerCarrito();
-
+    const carrito = obtenerCarrito();
 
     const estadoVacio =
-      document.getElementById(
-        "estadoVacio"
-      );
-
+      document.getElementById("estadoVacio");
 
     const contenido =
-      document.getElementById(
-        "contenidoCarrito"
-      );
-
+      document.getElementById("contenidoCarrito");
 
     const lista =
-      document.getElementById(
-        "listaCarrito"
-      );
-
+      document.getElementById("listaCarrito");
 
     const totalElemento =
-      document.getElementById(
-        "total"
-      );
+      document.getElementById("total");
 
+    const contadorItems =
+      document.getElementById("contadorItems");
+
+    const resumenProductos =
+      document.getElementById("resumenProductos");
+
+    const resumenUnidades =
+      document.getElementById("resumenUnidades");
 
     document
-      .getElementById(
-        "zonaWhatsapp"
-      )
+      .getElementById("zonaWhatsapp")
       .classList
       .add("oculto");
 
-
-    if (
-      carrito.length === 0
-    ) {
-
+    if (carrito.length === 0) {
 
       estadoVacio
         .classList
         .remove("oculto");
 
-
       contenido
         .classList
         .add("oculto");
 
-
       return;
-
     }
-
 
     estadoVacio
       .classList
       .add("oculto");
 
-
     contenido
       .classList
       .remove("oculto");
 
-
     let html = "";
-
     let total = 0;
+    let unidadesTotales = 0;
 
+    carrito.forEach((producto, index) => {
 
-    carrito.forEach(
+      const subtotal =
+        producto.precio * producto.cantidad;
 
-      (producto, index) => {
+      total += subtotal;
+      unidadesTotales += producto.cantidad;
 
+      const referenciaHtml =
+        producto.referencia
+        ? `
+          <div class="ref-item">
+            Ref. ${producto.referencia}
+          </div>
+        `
+        : "";
 
-        const subtotal =
+      html += `
+        <div class="item-carrito">
 
-          producto.precio *
+          <div class="item-superior">
 
-          producto.cantidad;
-
-
-        total += subtotal;
-
-
-        const referenciaHtml =
-
-          producto.referencia
-
-          ? `
-
-            <div class="ref-item">
-
-              Referencia:
-
-              <b>
-                ${producto.referencia}
-              </b>
-
-            </div>
-
-          `
-
-          : "";
-
-
-        html += `
-
-          <div class="item-carrito">
-
-            <div class="nombre-item">
-
-              ${producto.nombre}
-
-            </div>
-
-
-            ${referenciaHtml}
-
-
-            <div class="precio-item">
-
-              Precio unitario:
-
-              $${producto.precio
-                .toLocaleString(
-                  "es-CO"
-                )}
-
-            </div>
-
-
-            <div class="subtotal-item">
-
-              Subtotal:
-
-              $${subtotal
-                .toLocaleString(
-                  "es-CO"
-                )}
-
-            </div>
-
-
-            <div class="controles">
-
-
-              <div class="cantidad-control">
-
-
-                <button
-                  class="btn-cantidad"
-                  onclick="
-                    cambiarCantidad(
-                      ${index},
-                      -1
-                    )
-                  ">
-
-                  −
-
-                </button>
-
-
-                <span
-                  class="numero-cantidad">
-
-                  ${producto.cantidad}
-
-                </span>
-
-
-                <button
-                  class="btn-cantidad"
-                  onclick="
-                    cambiarCantidad(
-                      ${index},
-                      1
-                    )
-                  ">
-
-                  +
-
-                </button>
-
-
+            <div>
+              <div class="nombre-item">
+                ${producto.nombre}
               </div>
 
+              ${referenciaHtml}
+            </div>
+
+            <div class="precio-unitario-box">
+              <small>Precio unitario</small>
+              <div class="precio-item">
+                $${producto.precio.toLocaleString("es-CO")}
+              </div>
+            </div>
+
+          </div>
+
+          <div class="linea-item"></div>
+
+          <div class="item-inferior">
+
+            <div class="cantidad-control">
+
+              <button
+                class="btn-cantidad"
+                onclick="cambiarCantidad(${index}, -1)">
+                −
+              </button>
+
+              <span class="numero-cantidad">
+                ${producto.cantidad}
+              </span>
+
+              <button
+                class="btn-cantidad"
+                onclick="cambiarCantidad(${index}, 1)">
+                +
+              </button>
+
+            </div>
+
+            <div class="acciones-item">
+
+              <div class="subtotal-item">
+                Subtotal:
+                <strong>
+                  $${subtotal.toLocaleString("es-CO")}
+                </strong>
+              </div>
 
               <button
                 class="btn-eliminar"
-                onclick="
-                  eliminarProducto(
-                    ${index}
-                  )
-                ">
-
+                onclick="eliminarProducto(${index})">
                 Eliminar
-
               </button>
-
 
             </div>
 
           </div>
 
-        `;
+        </div>
+      `;
+    });
 
-      }
-
-    );
-
-
-    lista.innerHTML =
-      html;
-
+    lista.innerHTML = html;
 
     totalElemento.innerText =
+      total.toLocaleString("es-CO");
 
-      total.toLocaleString(
-        "es-CO"
-      );
+    if (contadorItems) {
+      contadorItems.innerText =
+        carrito.length === 1
+        ? "1 producto"
+        : carrito.length + " productos";
+    }
 
+    if (resumenProductos) {
+      resumenProductos.innerText = carrito.length;
+    }
+
+    if (resumenUnidades) {
+      resumenUnidades.innerText = unidadesTotales;
+    }
   }
 
 
@@ -1356,148 +1454,79 @@
 
   function prepararWhatsapp() {
 
+    const carrito = obtenerCarrito();
 
-    const carrito =
-      obtenerCarrito();
-
-
-    if (
-      carrito.length === 0
-    ) {
-
+    if (carrito.length === 0) {
       return;
-
     }
 
-
     let mensaje =
+      "Hola Bella Shop 💕✨
 
-      "Hola Bella Shop 💗\n\n" +
+" +
+      "Quiero realizar el siguiente pedido:
 
-      "Quiero solicitar los siguientes productos:\n\n";
-
+";
 
     let total = 0;
 
+    carrito.forEach(producto => {
 
-    carrito.forEach(
+      const subtotal =
+        producto.precio * producto.cantidad;
 
-      producto => {
+      total += subtotal;
 
+      mensaje +=
+        "• " + producto.nombre + "
+";
 
-        const subtotal =
-
-          producto.precio *
-
-          producto.cantidad;
-
-
-        total += subtotal;
-
-
+      if (producto.referencia) {
         mensaje +=
-
-          "• " +
-
-          producto.nombre +
-
-          "\n";
-
-
-        if (
-          producto.referencia
-        ) {
-
-
-          mensaje +=
-
-            "Referencia: " +
-
-            producto.referencia +
-
-            "\n";
-
-        }
-
-
-        mensaje +=
-
-          "Cantidad: " +
-
-          producto.cantidad +
-
-          "\n" +
-
-
-          "Precio unitario: $" +
-
-          producto.precio
-            .toLocaleString(
-              "es-CO"
-            ) +
-
-          "\n" +
-
-
-          "Subtotal: $" +
-
-          subtotal
-            .toLocaleString(
-              "es-CO"
-            ) +
-
-          "\n\n";
-
+          "  Referencia: " +
+          producto.referencia +
+          "
+";
       }
 
-    );
+      mensaje +=
+        "  Cantidad: " +
+        producto.cantidad +
+        "
+" +
+        "  Precio unitario: $" +
+        producto.precio.toLocaleString("es-CO") +
+        "
+" +
+        "  Subtotal: $" +
+        subtotal.toLocaleString("es-CO") +
+        "
 
+";
+    });
 
     mensaje +=
-
       "🛍️ TOTAL ESTIMADO: $" +
+      total.toLocaleString("es-CO") +
+      "
 
-      total.toLocaleString(
-        "es-CO"
-      ) +
-
-      "\n\n" +
-
-      "Quedo pendiente de confirmar disponibilidad, cantidades y valor final. 💗";
-
+" +
+      "Quedo pendiente de confirmar disponibilidad y valor final. 💗";
 
     const numero =
       "573122002698";
 
-
     const url =
-
       "https://api.whatsapp.com/send?phone=" +
-
       numero +
-
       "&text=" +
+      encodeURIComponent(mensaje);
 
-      encodeURIComponent(
-        mensaje
-      );
-
-
-    document
-      .getElementById(
-        "enlaceWhatsapp"
-      )
-      .href =
-      url;
-
-
-    document
-      .getElementById(
-        "zonaWhatsapp"
-      )
-      .classList
-      .remove("oculto");
-
+    window.open(
+      url,
+      "_blank",
+      "noopener,noreferrer"
+    );
   }
 
 
