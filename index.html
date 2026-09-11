@@ -770,6 +770,52 @@
     "individual";
 
 
+  /*
+  ==============================
+  IMPORTAR PEDIDO DESDE EL CATÁLOGO
+  ==============================
+  */
+
+  function importarPedidoDesdeUrl() {
+
+    const pedidoUrl =
+      parametros.get("pedido");
+
+    if (!pedidoUrl) {
+      return;
+    }
+
+    try {
+
+      const pedidoImportado =
+        JSON.parse(
+          decodeURIComponent(pedidoUrl)
+        );
+
+      if (
+        Array.isArray(pedidoImportado) &&
+        pedidoImportado.length > 0
+      ) {
+
+        localStorage.setItem(
+          "bellaShopCarrito",
+          JSON.stringify(pedidoImportado)
+        );
+
+      }
+
+    } catch (error) {
+
+      console.error(
+        "No se pudo importar el pedido.",
+        error
+      );
+
+    }
+
+  }
+
+
 
   /*
   ==============================
@@ -819,6 +865,8 @@
   */
 
   function iniciar() {
+
+    importarPedidoDesdeUrl();
 
     if (modo === "producto") {
 
