@@ -606,6 +606,9 @@
 
 
 
+  // Respeta la cantidad elegida antes de abrir el carrito desde producto.html.
+  const cantidadSolicitada=Math.min(99,Math.max(1,Math.trunc(Number(parametros.get('cantidad'))||1)));
+
   /*
   ==============================
   CARRITO
@@ -643,9 +646,95 @@
 
     );
 
+    const zona=document.getElementById("zonaWhatsapp");
+    if(zona)zona.classList.add("oculto");
   }
 
-
+  /*
+  ==============================
+  REVISIÓN DEL INVENTARIO DEL CARRITO
+  No modifica el diseño: solamente confirma cantidades y actualiza precios
+  cuando una línea del carrito tiene un código verificable de Odoo.
+  ==============================
+  */
+  let inventarioCarrito = null;
+  let consultaInventarioCarrito = null;
+  function claveInventarioCarrito(v) {
+    return String(v ?? "").normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+      .trim().toUpperCase().replace(/\s+/g," ");
+  }
+  function escaparHTMLCarrito(v) {
+    return String(v ?? "").replace(/[&<>"']/g, ch =>
+      ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
+  }
+  function obtenerFichaInventarioCarrito(linea) {
+    if (!inventarioCarrito || !linea) return null;
+    // Una referencia de tono sin código explícito puede coincidir con otra
+    // referencia de Odoo. Evitar esos falsos positivos.
+    if (linea.codigo) return inventarioCarrito.codigos.get(claveInventarioCarrito(linea.codigo)) || null;
+    if (linea.nombre && !linea.referencia) {
+      return inventarioCarrito.nombres.get(claveInventarioCarrito(linea.nombre)) || null;
+    }
+    return null;
+  }
+  function cargarInventarioCarrito() {
+    if (consultaInventarioCarrito) return consultaInventarioCarrito;
+    consultaInventarioCarrito = fetch("../bella-shop-pruebas/inventario.json",{cache:"no-store"})
+      .then(r=>{if(!r.ok)throw new Error("Inventario no disponible");return r.json()})
+      .then(d=>{
+        const datos=d.productos || d || {};
+        const fichas=Array.isArray(datos)?datos:Object.values(datos);
+        const codigos=new Map(), nombres=new Map();
+        const agregar=(map,clave,ficha)=>{
+          if(!clave)return;
+          if(!map.has(clave)) map.set(clave,ficha);
+          else if(map.get(clave)!==ficha) map.set(clave,null); // Código ambiguo
+        };
+        fichas.forEach(p=>{
+          if(!p)return;
+          [p.codigo,p.referencia_interna,p.codigo_barras].forEach(c=>
+            agregar(codigos,claveInventarioCarrito(c),p));
+          agregar(nombres,claveInventarioCarrito(p.nombre),p);
+        });
+        inventarioCarrito={codigos,nombres};
+        const carrito=obtenerCarrito();
+        let cambio=false;
+        carrito.forEach(linea=>{
+          const ficha=obtenerFichaInventarioCarrito(linea);
+          const nuevo=Number(ficha && ficha.precio_venta);
+          if(ficha && Number.isFinite(nuevo) && nuevo>0 && nuevo!==Number(linea.precio)) {
+            linea.precio=nuevo;cambio=true;
+          }
+        });
+        if(cambio) guardarCarrito(carrito);
+        if(modo!=="producto") mostrarCarrito();
+        return inventarioCarrito;
+      })
+      .catch(e=>{
+        console.warn("Bella Shop: la disponibilidad se confirmará en tienda.",e);
+        inventarioCarrito=null;
+        return null;
+      });
+    return consultaInventarioCarrito;
+  }
+  function avisosStockCarrito(carrito) {
+    if(!inventarioCarrito)return [];
+    const acumulado=new Map(),problemas=[];
+    carrito.forEach(linea=>{
+      const ficha=obtenerFichaInventarioCarrito(linea);
+      if(!ficha)return; // Compra sujeta a confirmación manual
+      const previo=acumulado.get(ficha)||{cantidad:0,nombre:linea.nombre};
+      previo.cantidad+=Number(linea.cantidad)||0;
+      acumulado.set(ficha,previo);
+    });
+    acumulado.forEach((dato,ficha)=>{
+      const stock=Math.max(0,Number(ficha.disponible)||0);
+      if(dato.cantidad>stock){
+        problemas.push(dato.nombre+": solicitadas "+dato.cantidad+", disponibles "+stock);
+      }
+    });
+    return problemas;
+  }
 
   /*
   ==============================
@@ -923,7 +1012,7 @@
     if (existente) {
 
 
-      existente.cantidad++;
+      existente.cantidad += cantidadSolicitada;
 
 
     } else {
@@ -943,8 +1032,7 @@
         precio:
           precio,
 
-        cantidad:
-          1
+        cantidad: cantidadSolicitada
 
       });
 
@@ -993,7 +1081,7 @@
     } else {
 
       window.location.href =
-        "https://sites.google.com/";
+        "../bella-shop-pruebas/";
 
     }
 
@@ -1107,7 +1195,7 @@
               Referencia:
 
               <b>
-                ${producto.referencia}
+                ${escaparHTMLCarrito(producto.referencia)}
               </b>
 
             </div>
@@ -1123,7 +1211,7 @@
 
             <div class="nombre-item">
 
-              ${producto.nombre}
+              ${escaparHTMLCarrito(producto.nombre)}
 
             </div>
 
@@ -1244,43 +1332,27 @@
   ==============================
   */
 
-  function cambiarCantidad(
-    index,
-    cambio
-  ) {
-
-
-    const carrito =
-      obtenerCarrito();
-
-
-    carrito[index].cantidad +=
-      cambio;
-
-
-    if (
-      carrito[index].cantidad <= 0
-    ) {
-
-
-      carrito.splice(
-        index,
-        1
-      );
-
+  function cambiarCantidad(index,cambio) {
+    const carrito=obtenerCarrito();
+    const linea=carrito[index];
+    if(!linea)return;
+    if(cambio>0) {
+      const ficha=obtenerFichaInventarioCarrito(linea);
+      if(ficha) {
+        const stock=Math.max(0,Number(ficha.disponible)||0);
+        const usadas=carrito.reduce((n,item)=>
+          n+(obtenerFichaInventarioCarrito(item)===ficha?Number(item.cantidad)||0:0),0);
+        if(usadas+cambio>stock) {
+          alert("Solo hay "+stock+" unidades disponibles de esta referencia. Revisa las cantidades y colores de tu pedido.");
+          return;
+        }
+      }
     }
-
-
-    guardarCarrito(
-      carrito
-    );
-
-
+    linea.cantidad=(Number(linea.cantidad)||0)+cambio;
+    if(linea.cantidad<=0)carrito.splice(index,1);
+    guardarCarrito(carrito);
     mostrarCarrito();
-
   }
-
-
 
   /*
   ==============================
@@ -1369,6 +1441,15 @@
 
     }
 
+
+    const diferencias=avisosStockCarrito(carrito);
+    if(diferencias.length) {
+      alert("Hay cantidades que superan las existencias del inventario actualizado:\n\n"+
+        diferencias.slice(0,6).join("\n")+
+        (diferencias.length>6?"\n... y otros productos.":"")+
+        "\n\nAjusta el pedido antes de enviarlo.");
+      return;
+    }
 
     let mensaje =
 
@@ -1502,6 +1583,7 @@
 
 
   iniciar();
+  cargarInventarioCarrito();
 
 </script>
 
